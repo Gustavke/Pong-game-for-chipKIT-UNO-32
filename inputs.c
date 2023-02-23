@@ -7,6 +7,6 @@ int getsw(void){
 }
 
 int getbtns(void){
-    volatile int btnValue = (PORTD >> 5) & 0x7;
+    volatile int btnValue = ((PORTD >> 4) & 0xe) | ((PORTF >> 1) & 0x1);
     return btnValue;
 }
