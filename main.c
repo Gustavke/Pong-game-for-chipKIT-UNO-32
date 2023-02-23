@@ -1,6 +1,8 @@
 #include <pic32mx.h>
 #include <stdint.h>
 #include <display.c>
+#include <inputs.c>
+
 
 struct point {
 	int x;
@@ -27,6 +29,22 @@ int main() {
 	//renderPoint(ball.x,ball.y);
 	
 	while(1){
+		if(getbtns() & BTN1_MASK){
+			PORTESET = 0x1;
+		}
+
+		if(getbtns() & BTN2_MASK){
+			PORTESET = 0x2;
+		}
+
+		if(getbtns() & BTN3_MASK){
+			PORTESET = 0x4;
+		}
+
+		if(getbtns() & BTN4_MASK){
+			PORTESET = 0x8;
+		}
+
 		clearScreen(displaybuffer);
 		renderPoint(ball.x,ball.y);
 		updateScreen(displaybuffer);
