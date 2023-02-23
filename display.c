@@ -15,10 +15,10 @@
 #define DISPLAY_COMMAND_DATA_MASK 0x10
 #define DISPLAY_RESET_PORT PORTG
 #define DISPLAY_RESET_MASK 0x200
-
 #define DISPLAY_SIZE 128*4
 
-uint8_t displaybuffer[DISPLAY_SIZE] = {0};
+uint8_t displayBuffer[DISPLAY_SIZE] = {0};
+
 
 char textbuffer[4][16];
 
@@ -64,13 +64,13 @@ void display_init() {
 	spi_send_recv(0xAF);
 }
 
-void clearScreen(uint8_t * buffer)
+void clearScreen(void)
 {	int i;
 	for (i = 0; i < 128*4; i++) {
-		buffer[i] = 0;}
+		displayBuffer[i] = 0;}
 }
 
-void updateScreen(const uint8_t *data) {
+void updateScreen(void) {
 	int i, j;
 	
 	for(i = 0; i < 4; i++) {
@@ -84,7 +84,7 @@ void updateScreen(const uint8_t *data) {
 		DISPLAY_COMMAND_DATA_PORT |= DISPLAY_COMMAND_DATA_MASK;
 		
 		for(j = 0; j < 128; j++)
-			spi_send_recv(data[i*128 + j]);
+			spi_send_recv(displayBuffer[i*128 + j]);
 	}
 
     
@@ -92,5 +92,5 @@ void updateScreen(const uint8_t *data) {
 
 void renderPoint(int x, int y){
 	int page = y/8;
-	displaybuffer[page * 128 + x] = (uint8_t)(1 << y - 8 * page);
+	displayBuffer[page * 128 + x] = (uint8_t)(1 << y - 8 * page);
 }

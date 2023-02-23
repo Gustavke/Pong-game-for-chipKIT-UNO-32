@@ -1,7 +1,7 @@
 #include <pic32mx.h>
 #include <stdint.h>
-#include <display.c>
-#include <inputs.c>
+#include "inputs.h"
+
 
 
 struct point {
@@ -19,8 +19,9 @@ if(IFS(0) & 0x100){
 }
 
 int main() {
-	display_init();
 	init();
+	display_init();
+	
 	struct point ball;
  	 ball.x = 14;
  	 ball.y = 6;
@@ -45,9 +46,9 @@ int main() {
 			PORTESET = 0x8;
 		}
 
-		clearScreen(displaybuffer);
+		clearScreen();
 		renderPoint(ball.x,ball.y);
-		updateScreen(displaybuffer);
+		updateScreen();
 		if(ball.x == 127){
 			direction = - 1;
 		}
