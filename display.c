@@ -92,5 +92,5 @@ void updateScreen(void) {
 
 void renderPoint(int x, int y){
 	int page = y/8;
-	displayBuffer[page * 128 + x] = (uint8_t)(1 << y - 8 * page);
+	displayBuffer[page * 128 + x] |= (uint8_t)(1 << y - 8 * page);
 }
