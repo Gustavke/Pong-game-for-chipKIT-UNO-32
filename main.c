@@ -17,14 +17,10 @@ struct paddle{
 	uint8_t x;
 	uint8_t y;
 };
+struct point ball;
+struct paddle paddle1;
 
-void user_isr( void ) {
 
-if(IFS(0) & 0x100){
-  IFSCLR(0) = 0x100;
-  //updateScreen(displaybuffer);
-  }
-}
 
 void collision(struct point* ball, struct paddle paddle1){
 	if(ball->x == 127 - BALL_SIZE/2){
@@ -65,8 +61,7 @@ void renderBall(struct point ball){
 int main() {
 	init();
 	display_init();
-	
-	struct point ball;
+	enable_interrupt(); //Enable interrupts globally 
 	ball.x = 14;
 	ball.y = 6;
 	ball.xSpeed = 1;
@@ -103,17 +98,31 @@ int main() {
 			}
 		}
 
-		clearScreen();
 		
-		renderPaddle(paddle1);
-		renderBall(ball);
-
-		updateScreen();
+		
+		
+		
+		
+		
 		collision(&ball, paddle1);
 
 		ball.x += ball.xSpeed;
 		ball.y += ball.ySpeed;
-		delay(80000);
+		
 	};
 	return 0;
 } 
+
+
+void user_isr( void ) {
+	
+	if(IFS(0) & 0x100){
+		IFSCLR(0) = 0x100;
+		
+		clearScreen();
+		renderPaddle(paddle1);
+		renderBall(ball);
+		updateScreen();
+  //updateScreen(displaybuffer);
+  }
+}
