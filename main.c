@@ -26,22 +26,59 @@ if(IFS(0) & 0x100){
   }
 }
 
+void collision(struct point ball, struct paddle paddle1){
+	if(ball.x == 127 - BALL_SIZE/2){
+			ball.xSpeed = - 1;
+		}
+		if(ball.x == paddle1.x + 1 + BALL_SIZE/2 && ball.y - BALL_SIZE/2  <= paddle1.y + PADDLE_SIZE/2 && ball.y + BALL_SIZE/2 >= paddle1.y - PADDLE_SIZE/2){
+			ball.xSpeed = 1;
+		}
+		if(ball.y == 31){
+			ball.ySpeed = - 1;
+		}
+		if(ball.y == 0){
+			ball.ySpeed = 1;
+		}
+
+		if(ball.x < 1 + BALL_SIZE/2){
+			ball.x = 64;
+			ball.y = 16;
+		}
+}
+
+void renderPaddle(struct paddle paddle1){
+	int i;
+	for(i = paddle1.y - PADDLE_SIZE/2; i <= paddle1.y + PADDLE_SIZE/2; i++){
+			renderPoint(paddle1.x, i);
+		}
+}
+
+void renderBall(struct point ball){
+	int i, j;
+	for(i = ball.x - BALL_SIZE/2; i <= ball.x + BALL_SIZE/2; i++){
+			
+			for(j = ball.y - BALL_SIZE/2; j <= ball.y + BALL_SIZE/2; j++){
+				renderPoint(i,j);
+			}
+		}
+}
+
 int main() {
 	init();
 	display_init();
 	
 	struct point ball;
- 	 ball.x = 14;
- 	 ball.y = 6;
-	 int direction = 1;
-	 int yDirection = 0;
+	ball.x = 14;
+	ball.y = 6;
+	ball.xSpeed = 1;
+	ball.ySpeed = 1;
 	
 	struct paddle paddle1;
-	paddle1.x = 10;
+	paddle1.x = 5;
 	paddle1.y = 16;
 
 	struct paddle paddle2;
-	paddle2.x = 125;
+	paddle2.x = 122;
 	paddle2.y = 16;
 	
 	while(1){
@@ -68,37 +105,15 @@ int main() {
 		}
 
 		clearScreen();
-		int i, j;
-		for(i = paddle1.y - PADDLE_SIZE/2; i <= paddle1.y + PADDLE_SIZE/2; i++){
-			renderPoint(paddle1.x, i);
-		}
-		for(i = ball.x - BALL_SIZE/2; i <= ball.x + BALL_SIZE/2; i++){
-			
-			for(j = ball.y - BALL_SIZE/2; j <= ball.y + BALL_SIZE/2; j++){
-				renderPoint(i,j);
-			}
-		}
+		
+		renderPaddle(paddle1);
+		renderBall(ball);
+
 		updateScreen();
-		if(ball.x == 127 - BALL_SIZE/2){
-			direction = - 1;
-		}
-		if(ball.x == paddle1.x + 1 + BALL_SIZE/2 && ball.y - BALL_SIZE/2  <= paddle1.y + PADDLE_SIZE/2 && ball.y + BALL_SIZE/2 >= paddle1.y - PADDLE_SIZE/2){
-			direction = 1;
-		}
-		if(ball.y == 31){
-			yDirection = - 1;
-		}
-		if(ball.y == 0){
-			yDirection = 1;
-		}
+		collision(ball, paddle1);
 
-		if(ball.x < 1 + BALL_SIZE/2){
-			ball.x = 64;
-			ball.y = 16;
-		}
-
-		ball.x += direction;
-		ball.y += yDirection;
+		ball.x += ball.xSpeed;
+		ball.y += ball.ySpeed;
 		delay(80000);
 	};
 	return 0;
