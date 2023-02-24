@@ -26,23 +26,23 @@ if(IFS(0) & 0x100){
   }
 }
 
-void collision(struct point ball, struct paddle paddle1){
-	if(ball.x == 127 - BALL_SIZE/2){
-			ball.xSpeed = - ball.xSpeed;
+void collision(struct point* ball, struct paddle paddle1){
+	if(ball->x == 127 - BALL_SIZE/2){
+			ball->xSpeed = - ball->xSpeed;
 		}
-		if(ball.x == paddle1.x + 1 + BALL_SIZE/2 && ball.y - BALL_SIZE/2  <= paddle1.y + PADDLE_SIZE/2 && ball.y + BALL_SIZE/2 >= paddle1.y - PADDLE_SIZE/2){
-			ball.xSpeed = - ball.xSpeed;
+		if(ball->x == paddle1.x + 1 + BALL_SIZE/2 && ball->y - BALL_SIZE/2  <= paddle1.y + PADDLE_SIZE/2 && ball->y + BALL_SIZE/2 >= paddle1.y - PADDLE_SIZE/2){
+			ball->xSpeed = - ball->xSpeed;
 		}
-		if(ball.y == 31){
-			ball.ySpeed = - ball.ySpeed;
+		if(ball->y >= 31){
+			ball->ySpeed = - ball->ySpeed;
 		}
-		if(ball.y == 0){
-			ball.ySpeed = - ball.ySpeed;
+		if(ball->y <= 0){
+			ball->ySpeed = - ball->ySpeed;
 		}
 
-		if(ball.x < 1 + BALL_SIZE/2){
-			ball.x = 64;
-			ball.y = 16;
+		if(ball->x < 1 + BALL_SIZE/2){
+			ball->x = 64;
+			ball->y = 16;
 		}
 }
 
@@ -109,7 +109,7 @@ int main() {
 		renderBall(ball);
 
 		updateScreen();
-		collision(ball, paddle1);
+		collision(&ball, paddle1);
 
 		ball.x += ball.xSpeed;
 		ball.y += ball.ySpeed;
