@@ -28,16 +28,16 @@ if(IFS(0) & 0x100){
 
 void collision(struct point ball, struct paddle paddle1){
 	if(ball.x == 127 - BALL_SIZE/2){
-			ball.xSpeed = - 1;
+			ball.xSpeed = - ball.xSpeed;
 		}
 		if(ball.x == paddle1.x + 1 + BALL_SIZE/2 && ball.y - BALL_SIZE/2  <= paddle1.y + PADDLE_SIZE/2 && ball.y + BALL_SIZE/2 >= paddle1.y - PADDLE_SIZE/2){
-			ball.xSpeed = 1;
+			ball.xSpeed = - ball.xSpeed;
 		}
 		if(ball.y == 31){
-			ball.ySpeed = - 1;
+			ball.ySpeed = - ball.ySpeed;
 		}
 		if(ball.y == 0){
-			ball.ySpeed = 1;
+			ball.ySpeed = - ball.ySpeed;
 		}
 
 		if(ball.x < 1 + BALL_SIZE/2){
@@ -55,8 +55,7 @@ void renderPaddle(struct paddle paddle1){
 
 void renderBall(struct point ball){
 	int i, j;
-	for(i = ball.x - BALL_SIZE/2; i <= ball.x + BALL_SIZE/2; i++){
-			
+	for(i = ball.x - BALL_SIZE/2; i <= ball.x + BALL_SIZE/2; i++){			
 			for(j = ball.y - BALL_SIZE/2; j <= ball.y + BALL_SIZE/2; j++){
 				renderPoint(i,j);
 			}
@@ -78,7 +77,7 @@ int main() {
 	paddle1.y = 16;
 
 	struct paddle paddle2;
-	paddle2.x = 122;
+	paddle2.x = 12;
 	paddle2.y = 16;
 	
 	while(1){
