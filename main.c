@@ -1,6 +1,7 @@
 #include <pic32mx.h>
 #include <stdint.h>
 #include "inputs.h"
+#include <math.h>
 
 #define PADDLE_SIZE 9
 #define PADDLE_MAX 31-PADDLE_SIZE/2
@@ -20,6 +21,15 @@ struct paddle{
 struct point ball;
 struct paddle paddle1;
 
+double sqroot(double square)
+{
+    double root=square/3;
+    int i;
+    if (square <= 0) return 0;
+    for (i=0; i<32; i++)
+        root = (root + square / root) / 2;
+    return root;
+}
 
 
 void collision(struct point* ball, struct paddle paddle1){
@@ -27,7 +37,11 @@ void collision(struct point* ball, struct paddle paddle1){
 			ball->xSpeed = - ball->xSpeed;
 		}
 		if(ball->x == paddle1.x + 1 + BALL_SIZE/2 && ball->y - BALL_SIZE/2  <= paddle1.y + PADDLE_SIZE/2 && ball->y + BALL_SIZE/2 >= paddle1.y - PADDLE_SIZE/2){
-			ball->xSpeed = - ball->xSpeed;
+			ball->ySpeed = ball->ySpeed + (ball->y - paddle1.y) * 1/6;
+			if(ball->ySpeed > 1.35){
+				ball->ySpeed = 1.35;
+			}
+			ball->xSpeed = - sqroot(2 - ball->ySpeed * ball->ySpeed);
 		}
 		if(ball->y >= 31){
 			ball->ySpeed = - ball->ySpeed;
