@@ -1,5 +1,6 @@
 #include <pic32mx.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include "inputs.h"
 #include <math.h>
 
@@ -7,6 +8,11 @@
 #define PADDLE_MAX 31-PADDLE_SIZE/2
 #define PADDLE_MIN PADDLE_SIZE/2
 #define BALL_SIZE 3
+#define STATE_MENU 0
+#define STATE_SINGLEPLAYER 1
+#define STATE_MULTIPLAYER 2
+#define STATE_VIEWHIGHSCORE 3
+
 struct point {
 	float x;
 	float y;
@@ -21,6 +27,8 @@ struct paddle{
 /* struct point ball;
 struct paddle paddle1;
 struct paddle paddle2; */
+uint8_t gameState = STATE_MENU;
+
 
 double sqroot(double square)
 {
@@ -47,6 +55,7 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 				ball->ySpeed = 0.8;
 			}
 			ball->xSpeed = - sqroot(1 - ball->ySpeed * ball->ySpeed);
+			
 		}
 
 	if(ball->y >= 31 - BALL_SIZE/2){
@@ -92,38 +101,40 @@ void gameLoop(){
 	struct paddle paddle2;
 	paddle2.x = 125;
 	paddle2.y = 16;
-
+	//int randomValue = rand() % 8;
 	while(1){
 		clearScreen();
 		if(getbtns() & BTN1_MASK){
 			PORTESET = 0x1;
-			if(paddle2.y > PADDLE_MIN){
+			if(paddle2.y < PADDLE_MAX){
 			paddle2.y++;
 			}
 		}
 
 		if(getbtns() & BTN2_MASK){
 			PORTESET = 0x2;
-			if(paddle2.y < PADDLE_MAX){
+			if(paddle2.y > PADDLE_MIN){
 			paddle2.y--;
 			}
 		}
 
 		if(getbtns() & BTN3_MASK){
 			PORTESET = 0x4;
-			if(paddle1.y > PADDLE_MIN){
+			if(paddle1.y < PADDLE_MAX){
 			paddle1.y++;
 			}
 		}
 
 		if(getbtns() & BTN4_MASK){
 			PORTESET = 0x8;
-			if(paddle1.y < PADDLE_MAX){
+			if(paddle1.y > PADDLE_MIN){
 			paddle1.y--;
 			}
 		}
 
-		collision(&ball, paddle1);
+		//paddle2.y = ball.y + randomValue;
+
+		collision(&ball, paddle1, paddle2);
 		ball.x += ball.xSpeed;
 		ball.y += ball.ySpeed;
 		renderPaddle(paddle1);
@@ -134,10 +145,54 @@ void gameLoop(){
 	}
 }
 
+void menu(void){
+	display_string(1, "Singleplayer");
+	display_string(2, "Multiplayer");
+	display_string(3, "Highscore");
+
+	display_update();
+	while(!gameState){
+		if(getbtns() & BTN2_MASK){
+			PORTESET = 0x2;
+			gameState = STATE_VIEWHIGHSCORE;
+			
+		}
+
+		if(getbtns() & BTN3_MASK){
+			gameState = STATE_MULTIPLAYER;
+			
+		}
+
+		if(getbtns() & BTN4_MASK){
+			PORTESET = 0x8;
+			gameState = STATE_SINGLEPLAYER;
+			}
+	}
+}
+
 int main() {
+	//srand(0x8924152c);
 	init();
 	display_init();
-	gameLoop();
+	while(1){
+		switch (gameState)
+		{
+		case 0:
+			menu();
+			break;
+		case 1:
+			gameLoop();
+			break;
+		case 2: 
+			gameLoop();
+			break;
+		case 3:
+			menu();
+			break;
+		}
+	}
+	//menu();
+	//gameLoop();
 	//enable_interrupt(); //Enable interrupts globally 
 	return 0;
 } 
