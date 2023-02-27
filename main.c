@@ -8,8 +8,8 @@
 #define PADDLE_MIN PADDLE_SIZE/2
 #define BALL_SIZE 3
 struct point {
-	int x;
-	int y;
+	float x;
+	float y;
 	float xSpeed;
 	float ySpeed;
 };
@@ -33,27 +33,29 @@ double sqroot(double square)
 
 
 void collision(struct point* ball, struct paddle paddle1){
-	if(ball->x == 127 - BALL_SIZE/2){
+	if(ball->x >= 127 - BALL_SIZE/2){
 			ball->xSpeed = - ball->xSpeed;
+			
 		}
-		if(ball->x == paddle1.x + 1 + BALL_SIZE/2 && ball->y - BALL_SIZE/2  <= paddle1.y + PADDLE_SIZE/2 && ball->y + BALL_SIZE/2 >= paddle1.y - PADDLE_SIZE/2){
-			ball->ySpeed = ball->ySpeed + (ball->y - paddle1.y) * 1/6;
-			if(ball->ySpeed > 1.35){
-				ball->ySpeed = 1.35;
-			}
-			ball->xSpeed = - sqroot(2 - ball->ySpeed * ball->ySpeed);
+	if((int)ball->x == paddle1.x + 1 + BALL_SIZE/2 && ball->y - BALL_SIZE/2  <= paddle1.y + PADDLE_SIZE/2 && ball->y + BALL_SIZE/2 >= paddle1.y - PADDLE_SIZE/2){
+		ball->ySpeed = ball->ySpeed + (ball->y - paddle1.y) * 1/6;
+		if(ball->ySpeed > 0.8){
+			ball->ySpeed = 0.8;
 		}
-		if(ball->y >= 31){
-			ball->ySpeed = - ball->ySpeed;
-		}
-		if(ball->y <= 0){
-			ball->ySpeed = - ball->ySpeed;
-		}
+		ball->xSpeed = sqroot(1 - ball->ySpeed * ball->ySpeed);
+		/
+	}
+	if(ball->y >= 31 - BALL_SIZE/2){
+		ball->ySpeed = - ball->ySpeed;
+	}
+	if(ball->y <= 0 + BALL_SIZE/2){
+		ball->ySpeed = - ball->ySpeed;
+	}
 
-		if(ball->x < 1 + BALL_SIZE/2){
-			ball->x = 64;
-			ball->y = 16;
-		}
+	if(ball->x < 1 + BALL_SIZE/2){
+		ball->x = 64;
+		ball->y = 16;
+	}
 }
 
 void renderPaddle(struct paddle paddle1){
@@ -75,8 +77,8 @@ void renderBall(struct point ball){
 void gameLoop(){
 	ball.x = 14;
 	ball.y = 6;
-	ball.xSpeed = 1;
-	ball.ySpeed = 1;
+	ball.xSpeed = 1/sqroot(2);
+	ball.ySpeed = 1/sqroot(2);
 	
 	struct paddle paddle1;
 	paddle1.x = 5;
@@ -116,7 +118,7 @@ void gameLoop(){
 		renderPaddle(paddle1);
 		renderBall(ball);
 		updateScreen();
-		delay(60000);
+		delay(80000);
 	}
 }
 
