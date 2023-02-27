@@ -29,6 +29,8 @@ struct paddle paddle1;
 struct paddle paddle2; */
 uint8_t gameState = STATE_MENU;
 
+uint8_t score_p1;
+uint8_t score_p2;
 
 double sqroot(double square)
 {
@@ -55,7 +57,6 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 				ball->ySpeed = 0.8;
 			}
 			ball->xSpeed = - sqroot(1 - ball->ySpeed * ball->ySpeed);
-			
 		}
 
 	if(ball->y >= 31 - BALL_SIZE/2){
@@ -65,9 +66,22 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 		ball->ySpeed = - ball->ySpeed;
 	}
 
-	if(ball->x < 1 + BALL_SIZE/2 || ball->x > 127 -BALL_SIZE/2){
+	if(ball->x < 1 + BALL_SIZE/2){
 		ball->x = 64;
 		ball->y = 16;
+		ball->xSpeed = - ball->xSpeed;
+		ball->ySpeed = - ball->ySpeed;
+		score_p2++;
+		PORTESET = 1 << (score_p2 - 1);
+	}
+
+	if(ball->x > 127 - BALL_SIZE/2){
+		ball->x = 64;
+		ball->y = 16;
+		ball->xSpeed = - ball->xSpeed;
+		ball->ySpeed = - ball->ySpeed;
+		score_p1++;
+		PORTESET = 1 << (7 - (score_p1 - 1));
 	}
 }
 
@@ -101,32 +115,32 @@ void gameLoop(){
 	struct paddle paddle2;
 	paddle2.x = 125;
 	paddle2.y = 16;
+
+	score_p1 = 0;
+	score_p2 = 0;
+
 	//int randomValue = rand() % 8;
 	while(1){
 		clearScreen();
 		if(getbtns() & BTN1_MASK){
-			PORTESET = 0x1;
 			if(paddle2.y < PADDLE_MAX){
 			paddle2.y++;
 			}
 		}
 
 		if(getbtns() & BTN2_MASK){
-			PORTESET = 0x2;
 			if(paddle2.y > PADDLE_MIN){
 			paddle2.y--;
 			}
 		}
 
 		if(getbtns() & BTN3_MASK){
-			PORTESET = 0x4;
 			if(paddle1.y < PADDLE_MAX){
 			paddle1.y++;
 			}
 		}
 
 		if(getbtns() & BTN4_MASK){
-			PORTESET = 0x8;
 			if(paddle1.y > PADDLE_MIN){
 			paddle1.y--;
 			}
@@ -153,7 +167,6 @@ void menu(void){
 	display_update();
 	while(!gameState){
 		if(getbtns() & BTN2_MASK){
-			PORTESET = 0x2;
 			gameState = STATE_VIEWHIGHSCORE;
 			
 		}
@@ -164,7 +177,6 @@ void menu(void){
 		}
 
 		if(getbtns() & BTN4_MASK){
-			PORTESET = 0x8;
 			gameState = STATE_SINGLEPLAYER;
 			}
 	}
