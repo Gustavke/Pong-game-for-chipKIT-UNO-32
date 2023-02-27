@@ -48,7 +48,7 @@ void init( void )
     TMR2 = 0; //Resetting counter
     T2CONSET = 1 << 15; //Start timer
 
-    IEC(0) = 0x100; //Enable interrupt for timer2 and int1
+    IEC(0) = 0x100; //Enable interrupt for timer2 
     IPC(2) = 4;  //Set timer 2 priority and subpriority 
     IPC(1) = 1 << 26;
     

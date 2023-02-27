@@ -58,10 +58,7 @@ void renderBall(struct point ball){
 		}
 }
 
-int main() {
-	init();
-	display_init();
-	enable_interrupt(); //Enable interrupts globally 
+void gameLoop(){
 	ball.x = 14;
 	ball.y = 6;
 	ball.xSpeed = 1;
@@ -74,8 +71,9 @@ int main() {
 	struct paddle paddle2;
 	paddle2.x = 12;
 	paddle2.y = 16;
-	
+
 	while(1){
+		clearScreen();
 		if(getbtns() & BTN1_MASK){
 			PORTESET = 0x1;
 		}
@@ -98,18 +96,21 @@ int main() {
 			}
 		}
 
-		
-		
-		
-		
-		
-		
 		collision(&ball, paddle1);
-
 		ball.x += ball.xSpeed;
 		ball.y += ball.ySpeed;
-		
-	};
+		renderPaddle(paddle1);
+		renderBall(ball);
+		updateScreen();
+		delay(60000);
+	}
+}
+
+int main() {
+	init();
+	display_init();
+	gameLoop();
+	//enable_interrupt(); //Enable interrupts globally 
 	return 0;
 } 
 
@@ -119,10 +120,7 @@ void user_isr( void ) {
 	if(IFS(0) & 0x100){
 		IFSCLR(0) = 0x100;
 		
-		clearScreen();
-		renderPaddle(paddle1);
-		renderBall(ball);
-		updateScreen();
+		
   //updateScreen(displaybuffer);
   }
 }
