@@ -18,8 +18,9 @@ struct paddle{
 	uint8_t x;
 	uint8_t y;
 };
-struct point ball;
+/* struct point ball;
 struct paddle paddle1;
+struct paddle paddle2; */
 
 double sqroot(double square)
 {
@@ -32,19 +33,22 @@ double sqroot(double square)
 }
 
 
-void collision(struct point* ball, struct paddle paddle1){
-	if(ball->x >= 127 - BALL_SIZE/2){
-			ball->xSpeed = - ball->xSpeed;
-			
-		}
+void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2){
 	if((int)ball->x == paddle1.x + 1 + BALL_SIZE/2 && ball->y - BALL_SIZE/2  <= paddle1.y + PADDLE_SIZE/2 && ball->y + BALL_SIZE/2 >= paddle1.y - PADDLE_SIZE/2){
 		ball->ySpeed = ball->ySpeed + (ball->y - paddle1.y) * 1/6;
 		if(ball->ySpeed > 0.8){
 			ball->ySpeed = 0.8;
 		}
 		ball->xSpeed = sqroot(1 - ball->ySpeed * ball->ySpeed);
-		/
 	}
+	if((int)ball->x == paddle2.x - BALL_SIZE/2 && ball->y - BALL_SIZE/2  <= paddle2.y + PADDLE_SIZE/2 && ball->y + BALL_SIZE/2 >= paddle2.y - PADDLE_SIZE/2){
+			ball->ySpeed = ball->ySpeed + (ball->y - paddle1.y) * 1/6;
+			if(ball->ySpeed > 0.8){
+				ball->ySpeed = 0.8;
+			}
+			ball->xSpeed = - sqroot(1 - ball->ySpeed * ball->ySpeed);
+		}
+
 	if(ball->y >= 31 - BALL_SIZE/2){
 		ball->ySpeed = - ball->ySpeed;
 	}
@@ -52,16 +56,16 @@ void collision(struct point* ball, struct paddle paddle1){
 		ball->ySpeed = - ball->ySpeed;
 	}
 
-	if(ball->x < 1 + BALL_SIZE/2){
+	if(ball->x < 1 + BALL_SIZE/2 || ball->x > 127 -BALL_SIZE/2){
 		ball->x = 64;
 		ball->y = 16;
 	}
 }
 
-void renderPaddle(struct paddle paddle1){
+void renderPaddle(struct paddle paddle){
 	int i;
-	for(i = paddle1.y - PADDLE_SIZE/2; i <= paddle1.y + PADDLE_SIZE/2; i++){
-			renderPoint(paddle1.x, i);
+	for(i = paddle.y - PADDLE_SIZE/2; i <= paddle.y + PADDLE_SIZE/2; i++){
+			renderPoint(paddle.x, i);
 		}
 }
 
@@ -75,6 +79,7 @@ void renderBall(struct point ball){
 }
 
 void gameLoop(){
+	struct point ball;
 	ball.x = 14;
 	ball.y = 6;
 	ball.xSpeed = 1/sqroot(2);
@@ -85,30 +90,36 @@ void gameLoop(){
 	paddle1.y = 16;
 
 	struct paddle paddle2;
-	paddle2.x = 12;
+	paddle2.x = 125;
 	paddle2.y = 16;
 
 	while(1){
 		clearScreen();
 		if(getbtns() & BTN1_MASK){
 			PORTESET = 0x1;
+			if(paddle2.y > PADDLE_MIN){
+			paddle2.y++;
+			}
 		}
 
 		if(getbtns() & BTN2_MASK){
 			PORTESET = 0x2;
+			if(paddle2.y < PADDLE_MAX){
+			paddle2.y--;
+			}
 		}
 
 		if(getbtns() & BTN3_MASK){
 			PORTESET = 0x4;
 			if(paddle1.y > PADDLE_MIN){
-			paddle1.y--;
+			paddle1.y++;
 			}
 		}
 
 		if(getbtns() & BTN4_MASK){
 			PORTESET = 0x8;
 			if(paddle1.y < PADDLE_MAX){
-			paddle1.y++;
+			paddle1.y--;
 			}
 		}
 
@@ -116,6 +127,7 @@ void gameLoop(){
 		ball.x += ball.xSpeed;
 		ball.y += ball.ySpeed;
 		renderPaddle(paddle1);
+		renderPaddle(paddle2);
 		renderBall(ball);
 		updateScreen();
 		delay(80000);
