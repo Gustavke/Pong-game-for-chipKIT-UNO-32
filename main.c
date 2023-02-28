@@ -50,6 +50,18 @@ double sqroot(double square)
     return root;
 }
 
+char* combineString(char str1[], char str2[]){
+	//int length = sizeof(str1) + sizeof(str2);
+	int i, j;
+	char joinedString[16];
+	for(i = 0; i < sizeof(str1); i++){
+		joinedString[i] = str1[i];
+	}
+	for(j = 0; j < sizeof(str2); j++){
+		joinedString[i + j] = str2[i];
+	}
+	return joinedString;
+}
 
 void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2){
 	if((int)ball->x == paddle1.x + PADDLE_WIDTH/2 + BALL_SIZE/2 && 
@@ -231,7 +243,7 @@ void gameLoop(){
 					btnPressed = 0;
 				}
 				display_string(0, "HIGHSCORE:");
-				display_string(1, scoreString);
+				display_string(1, combineString("Score: ", scoreString));
 				display_string(2, "Enter name:");
 				display_string(3, name);
 				display_update();
