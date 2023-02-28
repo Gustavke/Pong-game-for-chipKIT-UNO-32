@@ -34,6 +34,8 @@ uint8_t gameState = STATE_MENU;
 uint8_t score_p1;
 uint8_t score_p2;
 
+int randomValue = 0;
+
 double sqroot(double square)
 {
     double root=square/3;
@@ -52,6 +54,7 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 			ball->ySpeed = 0.8;
 		}
 		ball->xSpeed = sqroot(1 - ball->ySpeed * ball->ySpeed);
+		randomValue = rand() % 8;
 	}
 	if((int)ball->x == paddle2.x - BALL_SIZE/2 && ball->y - BALL_SIZE/2  <= paddle2.y + PADDLE_SIZE/2 && ball->y + BALL_SIZE/2 >= paddle2.y - PADDLE_SIZE/2){
 			ball->ySpeed = ball->ySpeed + (ball->y - paddle1.y) * 1/6;
@@ -121,7 +124,6 @@ void gameLoop(){
 	score_p1 = 0;
 	score_p2 = 0;
 
-	int randomValue = rand() % 8;
 	while(1){
 		clearScreen();
 		if(getbtns() & BTN1_MASK){
@@ -148,11 +150,11 @@ void gameLoop(){
 			}
 		}
 
-		if(ball.xSpeed > 0 && paddle2.y + randomValue < ball.y && paddle2.y < PADDLE_MAX && ball.x > 110){
+		if(ball.xSpeed > 0 && paddle2.y + randomValue < ball.y && paddle2.y < PADDLE_MAX && ball.x > 70){
 			paddle2.y++;
 		}
 
-		if(ball.xSpeed > 0 && paddle2.y + randomValue > ball.y && paddle2.y > PADDLE_MIN && ball.x > 110){
+		if(ball.xSpeed > 0 && paddle2.y + randomValue > ball.y && paddle2.y > PADDLE_MIN && ball.x > 70){
 			paddle2.y--;
 		}
 	
