@@ -121,7 +121,7 @@ void gameLoop(){
 	score_p1 = 0;
 	score_p2 = 0;
 
-	//int randomValue = rand() % 8;
+	int randomValue = rand() % 8;
 	while(1){
 		clearScreen();
 		if(getbtns() & BTN1_MASK){
@@ -148,7 +148,14 @@ void gameLoop(){
 			}
 		}
 
-		//paddle2.y = ball.y + randomValue;
+		if(ball.xSpeed > 0 && paddle2.y + randomValue < ball.y && paddle2.y < PADDLE_MAX && ball.x > 110){
+			paddle2.y++;
+		}
+
+		if(ball.xSpeed > 0 && paddle2.y + randomValue > ball.y && paddle2.y > PADDLE_MIN && ball.x > 110){
+			paddle2.y--;
+		}
+	
 
 		collision(&ball, paddle1, paddle2);
 		ball.x += ball.xSpeed;
