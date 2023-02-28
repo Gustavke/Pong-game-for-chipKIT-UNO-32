@@ -49,7 +49,8 @@ double sqroot(double square)
 
 
 void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2){
-	if((int)ball->x == paddle1.x + PADDLE_WIDTH/2 + BALL_SIZE/2 && ball->y - BALL_SIZE/2  <= paddle1.y + PADDLE_HEIGHT/2 && ball->y + BALL_SIZE/2 >= paddle1.y - PADDLE_HEIGHT/2 && ball->xSpeed < 0){
+	if((int)ball->x == paddle1.x + PADDLE_WIDTH/2 + BALL_SIZE/2 && 
+	ball->y - BALL_SIZE/2  <= paddle1.y + PADDLE_HEIGHT/2 && ball->y + BALL_SIZE/2 >= paddle1.y - PADDLE_HEIGHT/2 && ball->xSpeed < 0){
 		ball->ySpeed = ball->ySpeed + (ball->y - paddle1.y) * 1/6;
 		if(ball->ySpeed > 0.8){
 			ball->ySpeed = 0.8;
@@ -60,7 +61,22 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 		ball->xSpeed = sqroot(1 - ball->ySpeed * ball->ySpeed);
 		randomValue = rand() % 8;
 	}
-	if((int)ball->x == paddle2.x - PADDLE_WIDTH/2 - BALL_SIZE/2 && ball->y - BALL_SIZE/2  <= paddle2.y + PADDLE_HEIGHT/2 && ball->y + BALL_SIZE/2 >= paddle2.y - PADDLE_HEIGHT/2 && ball->xSpeed > 0){
+
+	if(ball->x < paddle1.x + PADDLE_WIDTH/2 + BALL_SIZE/2 && ball->x > paddle1.x - PADDLE_WIDTH/2 - BALL_SIZE/2 &&
+	ball->y - BALL_SIZE/2 + 1  <= paddle1.y + PADDLE_HEIGHT/2 && ball->y + BALL_SIZE/2 - 1 >= paddle1.y - PADDLE_HEIGHT/2 && ball->xSpeed < 0){
+		ball->ySpeed = ball->ySpeed + (ball->y - paddle1.y) * 1/4;
+		if(ball->ySpeed > 0.9){
+			ball->ySpeed = 0.9;
+		}
+		if(ball->ySpeed < -0.9){
+			ball->ySpeed = -0.9;
+		}
+		ball->xSpeed = sqroot(1 - ball->ySpeed * ball->ySpeed);
+		randomValue = rand() % 8;
+	}
+
+	if((int)ball->x == paddle2.x - PADDLE_WIDTH/2 - BALL_SIZE/2 && 
+	ball->y - BALL_SIZE/2  <= paddle2.y + PADDLE_HEIGHT/2 && ball->y + BALL_SIZE/2 >= paddle2.y - PADDLE_HEIGHT/2 && ball->xSpeed > 0){
 			ball->ySpeed = ball->ySpeed + (ball->y - paddle1.y) * 1/6;
 			if(ball->ySpeed > 0.8){
 				ball->ySpeed = 0.8;
@@ -69,7 +85,19 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 			ball->ySpeed = -0.8;
 		}
 			ball->xSpeed = - sqroot(1 - ball->ySpeed * ball->ySpeed);
+	}
+
+	if(ball->x < paddle2.x - PADDLE_WIDTH/2 - BALL_SIZE/2 && ball->x > paddle2.x + PADDLE_WIDTH/2 + BALL_SIZE/2 &&
+	ball->y - BALL_SIZE/2 + 1  <= paddle2.y + PADDLE_HEIGHT/2 && ball->y + BALL_SIZE/2 - 1 >= paddle2.y - PADDLE_HEIGHT/2 && ball->xSpeed < 0){
+		ball->ySpeed = ball->ySpeed + (ball->y - paddle2.y) * 1/4;
+		if(ball->ySpeed > 0.9){
+			ball->ySpeed = 0.9;
 		}
+		if(ball->ySpeed < -0.9){
+			ball->ySpeed = -0.9;
+		}
+		ball->xSpeed = sqroot(1 - ball->ySpeed * ball->ySpeed);
+	}
 
 	if(ball->y >= 31 - BALL_SIZE/2){
 		ball->ySpeed = - sqrt(ball->ySpeed * ball->ySpeed);
