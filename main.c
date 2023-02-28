@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <errno.h>
 #include <pic32mx.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -183,7 +185,7 @@ void menu(void){
 }
 
 int main() {
-	//srand(0x8924152c);
+	srand(0x8924152c);
 	init();
 	display_init();
 	while(1){

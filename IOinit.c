@@ -1,6 +1,8 @@
 #include <pic32mx.h>
 #include <stdint.h>
 
+void *stdin, *stdout, *stderr, *errno;
+
 void init( void )
 {
     /* Set up peripheral bus clock */
