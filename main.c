@@ -6,9 +6,10 @@
 #include "inputs.h"
 #include <math.h>
 
-#define PADDLE_SIZE 9
-#define PADDLE_MAX 31-PADDLE_SIZE/2
-#define PADDLE_MIN PADDLE_SIZE/2
+#define PADDLE_HEIGHT 9
+#define PADDLE_WIDTH 3
+#define PADDLE_MAX 31-PADDLE_HEIGHT/2
+#define PADDLE_MIN PADDLE_HEIGHT/2
 #define BALL_SIZE 3
 #define STATE_MENU 0
 #define STATE_SINGLEPLAYER 1
@@ -48,19 +49,25 @@ double sqroot(double square)
 
 
 void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2){
-	if(ceil(ball->x) == paddle1.x + 1 + BALL_SIZE/2 && ball->y - BALL_SIZE/2  <= paddle1.y + PADDLE_SIZE/2 && ball->y + BALL_SIZE/2 >= paddle1.y - PADDLE_SIZE/2){
+	if((int)ball->x == paddle1.x + PADDLE_WIDTH/2 + BALL_SIZE/2 && ball->y - BALL_SIZE/2  <= paddle1.y + PADDLE_HEIGHT/2 && ball->y + BALL_SIZE/2 >= paddle1.y - PADDLE_HEIGHT/2 && ball->xSpeed < 0){
 		ball->ySpeed = ball->ySpeed + (ball->y - paddle1.y) * 1/6;
 		if(ball->ySpeed > 0.8){
 			ball->ySpeed = 0.8;
 		}
+		if(ball->ySpeed < -0.8){
+			ball->ySpeed = -0.8;
+		}
 		ball->xSpeed = sqroot(1 - ball->ySpeed * ball->ySpeed);
 		randomValue = rand() % 8;
 	}
-	if(floor(ball->x) == paddle2.x - BALL_SIZE/2 && ball->y - BALL_SIZE/2  <= paddle2.y + PADDLE_SIZE/2 && ball->y + BALL_SIZE/2 >= paddle2.y - PADDLE_SIZE/2){
+	if((int)ball->x == paddle2.x - PADDLE_WIDTH/2 - BALL_SIZE/2 && ball->y - BALL_SIZE/2  <= paddle2.y + PADDLE_HEIGHT/2 && ball->y + BALL_SIZE/2 >= paddle2.y - PADDLE_HEIGHT/2 && ball->xSpeed > 0){
 			ball->ySpeed = ball->ySpeed + (ball->y - paddle1.y) * 1/6;
 			if(ball->ySpeed > 0.8){
 				ball->ySpeed = 0.8;
 			}
+			if(ball->ySpeed < -0.8){
+			ball->ySpeed = -0.8;
+		}
 			ball->xSpeed = - sqroot(1 - ball->ySpeed * ball->ySpeed);
 		}
 
@@ -91,9 +98,12 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 }
 
 void renderPaddle(struct paddle paddle){
-	int i;
-	for(i = paddle.y - PADDLE_SIZE/2; i <= paddle.y + PADDLE_SIZE/2; i++){
-			renderPoint(paddle.x, i);
+	int i, j;
+	for(i = paddle.y - PADDLE_HEIGHT/2; i <= paddle.y + PADDLE_HEIGHT/2; i++){
+			for(j = paddle.x - PADDLE_WIDTH/2; j <= paddle.x + PADDLE_WIDTH/2; j++){
+				renderPoint(j, i);
+			}
+			
 		}
 }
 
@@ -126,13 +136,13 @@ void gameLoop(){
 
 	while(1){
 		clearScreen();
-		if(getbtns() & BTN1_MASK){
+		if(gameState == STATE_MULTIPLAYER && getbtns() & BTN1_MASK){
 			if(paddle2.y < PADDLE_MAX){
 			paddle2.y++;
 			}
 		}
 
-		if(getbtns() & BTN2_MASK){
+		if(gameState == STATE_MULTIPLAYER && getbtns() & BTN2_MASK){
 			if(paddle2.y > PADDLE_MIN){
 			paddle2.y--;
 			}
@@ -150,11 +160,11 @@ void gameLoop(){
 			}
 		}
 
-		if(ball.xSpeed > 0 && paddle2.y + randomValue < ball.y && paddle2.y < PADDLE_MAX && ball.x > 70){
+		if(gameState == STATE_SINGLEPLAYER && ball.xSpeed > 0 && paddle2.y + randomValue < ball.y && paddle2.y < PADDLE_MAX && ball.x > 70){
 			paddle2.y++;
 		}
 
-		if(ball.xSpeed > 0 && paddle2.y + randomValue > ball.y && paddle2.y > PADDLE_MIN && ball.x > 70){
+		if(gameState == STATE_SINGLEPLAYER && ball.xSpeed > 0 && paddle2.y + randomValue > ball.y && paddle2.y > PADDLE_MIN && ball.x > 70){
 			paddle2.y--;
 		}
 	
@@ -166,7 +176,7 @@ void gameLoop(){
 		renderPaddle(paddle2);
 		renderBall(ball);
 		updateScreen();
-		delay(80000);
+		delay(120000);
 	}
 }
 
