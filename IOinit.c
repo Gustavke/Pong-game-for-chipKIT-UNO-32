@@ -46,7 +46,7 @@ void init( void )
     *leds = 0; //Turn of leds
     TRISDSET = 0xfe0; // Set bit 5-11 to input (buttons and switches)
     T2CON = 0x7 << 4; //Disable timer and set prescaling 1:256
-    PR2 = 80000000 / 256 / 10; //Period value for 0,1s
+    PR2 = 80000000 / 256 / 80; //Period value for 0,1s
     TMR2 = 0; //Resetting counter
     T2CONSET = 1 << 15; //Start timer
 

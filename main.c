@@ -33,12 +33,13 @@ struct paddle{
 /* struct point ball;
 struct paddle paddle1;
 struct paddle paddle2; */
-uint8_t gameState = STATE_MENU;
 
+uint8_t gameState = STATE_MENU;
+volatile uint8_t gameAdvance;
 uint16_t score_p1;
 uint16_t score_p2;
 int highscore[3] = {0};
-char* highscoreName = "NO SCORE SET---------";
+char highscoreString[3][22];
 uint8_t difficulty = 0;
 
 int randomValue = 0;
@@ -53,7 +54,7 @@ double sqroot(double square)
     return root;
 }
 
-void combineString(char str1[], const char str2[], char targetString[]){
+void combineString(const char str1[], const char str2[], char targetString[]){
 	int i = 0;
 	int j = 0;
 
@@ -81,7 +82,7 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 			ball->ySpeed = - MAX_BALL_YSPEED;
 		}
 		ball->xSpeed = sqroot(1 - ball->ySpeed * ball->ySpeed);
-		randomValue = rand() % (8 + 4 * difficulty);
+		randomValue = rand() % (8 + difficulty);
 	}
 
 	if(ball->x < paddle1.x + PADDLE_WIDTH/2 + BALL_SIZE/2 && ball->x > paddle1.x - PADDLE_WIDTH/2 - BALL_SIZE/2 &&
@@ -94,7 +95,7 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 			ball->ySpeed = - MAX_BALL_YSPEED_EDGE_BOUNCE;
 		}
 		ball->xSpeed = sqroot(1 - ball->ySpeed * ball->ySpeed);
-		randomValue = rand() % (8 + 4 * difficulty);
+		randomValue = rand() % (8 + difficulty);
 	}
 
 	if((int)ball->x == paddle2.x - PADDLE_WIDTH/2 - BALL_SIZE/2 && 
@@ -181,8 +182,8 @@ void gameLoop(){
 	paddle2.x = 125;
 	paddle2.y = 16;
 
-	score_p1 = 2;
-	score_p2 = 2;
+	score_p1 = 0;
+	score_p2 = 0;
 
 	while(getbtns());
 
@@ -209,8 +210,9 @@ void gameLoop(){
 				difficulty = 2;
 				}
 	}
-
+		uint8_t count = 0;
 		while(score_p2 < 3){
+			count++;
 			clearScreen();
 			if(getbtns() & BTN3_MASK && paddle1.y < PADDLE_MAX){
 				paddle1.y++;
@@ -220,11 +222,11 @@ void gameLoop(){
 				paddle1.y--;
 			}
 
-			if(ball.xSpeed > 0 && paddle2.y + randomValue < ball.y && paddle2.y < PADDLE_MAX && ball.x > 70){
+			if(ball.xSpeed > 0 && paddle2.y + randomValue < ball.y && paddle2.y < PADDLE_MAX && ball.x > 70 && count > difficulty){
 				paddle2.y++;
 			}
 
-			if(ball.xSpeed > 0 && paddle2.y + randomValue > ball.y && paddle2.y > PADDLE_MIN && ball.x > 70){
+			if(ball.xSpeed > 0 && paddle2.y + randomValue > ball.y && paddle2.y > PADDLE_MIN && ball.x > 70 && count > difficulty){
 				paddle2.y--;
 			}
 			collision(&ball, paddle1, paddle2);
@@ -233,18 +235,23 @@ void gameLoop(){
 			renderPaddle(paddle1);
 			renderPaddle(paddle2);
 			renderBall(ball);
+			PORTECLR = 1;
+			while(!gameAdvance);
+			gameAdvance = 0;
 			updateScreen();
-			delay(120000);
+			if(count > 2){
+				count = 0;
+			}
 		}
 
 		if(score_p1 > highscore[difficulty]){
-			char name[4] = {65,65,65,0};
+			char name[22] = {65,65,65,0};
 			uint8_t index = 0;
 			uint8_t btnPressed = 0;
-			char scoreString[10];
+			char scoreString[7];
 			sprintf(scoreString, "%d", score_p1);
-			char combinedString[22];
-			char combinedString2[22];
+			char combinedString[22] = {0};
+			char combinedString2[44] = {0};
 			combineString("Score: ", scoreString, combinedString);
 			while (index < 3)
 			{
@@ -284,14 +291,40 @@ void gameLoop(){
 				
 			}
 			//combineString(name, " - ", combinedString2);
-			//combineString(combinedString, scoreString, highscoreName);
-			//combineString("test", "string", highscoreName);
-			//highscore[0] = score_p1;
-			combineString(name, " - ", combinedString);
-			//combineString(combinedString, scoreString, combinedString2);
-			highscoreName = combinedString;
-			while(getbtns());
+			//combineString(combinedString, scoreString, highscoreString);
+			//combineString("test", "string", highscoreString);
+			highscore[difficulty] = score_p1;
+			int i;
+			if(difficulty == 0){
+				char highscoreSubstring[21] = "HARD:   ";
+				strcat(highscoreSubstring, name);
+				strcat(highscoreSubstring, " - ");
+				strcat(highscoreSubstring, scoreString);
+				for(i = 0; i < 22; i++){
+					highscoreString[0][i] = highscoreSubstring[i];
+				}
+			}
+			if(difficulty == 1){
+				char highscoreSubstring[21] = "NORMAL: ";
+				strcat(highscoreSubstring, name);
+				strcat(highscoreSubstring, " - ");
+				strcat(highscoreSubstring, scoreString);
+				for(i = 0; i < 22; i++){
+					highscoreString[1][i] = highscoreSubstring[i];
+				}
+			}
+			if(difficulty == 2){
+				
+				char highscoreSubstring[21] = "EASY:   ";
+				strcat(highscoreSubstring, name);
+				strcat(highscoreSubstring, " - ");
+				strcat(highscoreSubstring, scoreString);
+				for(i = 0; i < 22; i++){
+					highscoreString[2][i] = highscoreSubstring[i];
+				}
+			}
 
+			while(getbtns());
 		}
 	}
 
@@ -321,8 +354,9 @@ void gameLoop(){
 			renderPaddle(paddle1);
 			renderPaddle(paddle2);
 			renderBall(ball);
+			while(!gameAdvance);
+			gameAdvance = 0;
 			updateScreen();
-			delay(120000);
 		}
 		if(score_p1 > score_p2){
 			renderWinner(1);
@@ -338,9 +372,11 @@ void gameLoop(){
 	gameState = STATE_MENU;
 }
 void viewHighscore(){
-	//char combinedString;
 	while(getbtns());
-	display_string(1, highscoreName);
+	display_string(0, "DIFFI. NAME SCORE");
+	display_string(1, highscoreString[2]);
+	display_string(2, highscoreString[1]);
+	display_string(3, highscoreString[0]);
 	display_update();
 	while(!getbtns());
 	while(getbtns());
@@ -377,6 +413,7 @@ int main() {
 	updateScreen();
 	while(!getbtns());
 	while(getbtns());
+	enable_interrupt();
 	while(1){
 		switch (gameState)
 		{
@@ -405,8 +442,7 @@ void user_isr( void ) {
 	
 	if(IFS(0) & 0x100){
 		IFSCLR(0) = 0x100;
+		gameAdvance++;
 		
-		
-  //updateScreen(displaybuffer);
   }
 }
