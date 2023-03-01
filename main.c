@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "inputs.h"
-#include <math.h>
 #include <string.h>
 
 #define PADDLE_HEIGHT 9
@@ -123,10 +122,10 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 	}
 
 	if(ball->y >= 31 - BALL_SIZE/2){
-		ball->ySpeed = - sqrt(ball->ySpeed * ball->ySpeed);
+		ball->ySpeed = - sqroot(ball->ySpeed * ball->ySpeed);
 	}
 	if(ball->y <= 0 + BALL_SIZE/2){
-		ball->ySpeed = sqrt(ball->ySpeed * ball->ySpeed);
+		ball->ySpeed = sqroot(ball->ySpeed * ball->ySpeed);
 	}
 
 	if(ball->x < 1 + BALL_SIZE/2){
@@ -235,7 +234,6 @@ void gameLoop(){
 			renderPaddle(paddle1);
 			renderPaddle(paddle2);
 			renderBall(ball);
-			PORTECLR = 1;
 			while(!gameAdvance);
 			gameAdvance = 0;
 			updateScreen();
@@ -407,13 +405,13 @@ void menu(void){
 }
 
 int main() {
-	srand(0x8924152c);
 	init();
 	display_init();
+	enable_interrupt();
 	updateScreen();
 	while(!getbtns());
 	while(getbtns());
-	enable_interrupt();
+	srand(TMR2);
 	while(1){
 		switch (gameState)
 		{
