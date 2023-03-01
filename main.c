@@ -12,6 +12,8 @@
 #define PADDLE_MAX 31-PADDLE_HEIGHT/2
 #define PADDLE_MIN PADDLE_HEIGHT/2
 #define BALL_SIZE 3
+#define MAX_BALL_YSPEED 0.8
+#define MAX_BALL_YSPEED_EDGE_BOUNCE 0.96
 #define STATE_MENU 0
 #define STATE_SINGLEPLAYER 1
 #define STATE_MULTIPLAYER 2
@@ -51,27 +53,27 @@ double sqroot(double square)
 }
 
 char* combineString(char str1[], char str2[]){
-	//int length = sizeof(str1) + sizeof(str2);
 	int i, j;
 	char joinedString[16];
 	for(i = 0; i < sizeof(str1); i++){
 		joinedString[i] = str1[i];
 	}
 	for(j = 0; j < sizeof(str2); j++){
-		joinedString[i + j] = str2[i];
+		joinedString[i + j] = str2[j];
 	}
-	return joinedString;
+	str1 = joinedString;
+	return str1;
 }
 
 void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2){
 	if((int)ball->x == paddle1.x + PADDLE_WIDTH/2 + BALL_SIZE/2 && 
 	ball->y - BALL_SIZE/2  <= paddle1.y + PADDLE_HEIGHT/2 && ball->y + BALL_SIZE/2 >= paddle1.y - PADDLE_HEIGHT/2 && ball->xSpeed < 0){
 		ball->ySpeed = ball->ySpeed + (ball->y - paddle1.y) * 1/6;
-		if(ball->ySpeed > 0.8){
-			ball->ySpeed = 0.8;
+		if(ball->ySpeed > MAX_BALL_YSPEED){
+			ball->ySpeed = MAX_BALL_YSPEED;
 		}
-		if(ball->ySpeed < -0.8){
-			ball->ySpeed = -0.8;
+		if(ball->ySpeed < - MAX_BALL_YSPEED){
+			ball->ySpeed = - MAX_BALL_YSPEED;
 		}
 		ball->xSpeed = sqroot(1 - ball->ySpeed * ball->ySpeed);
 		randomValue = rand() % 20;
@@ -80,11 +82,11 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 	if(ball->x < paddle1.x + PADDLE_WIDTH/2 + BALL_SIZE/2 && ball->x > paddle1.x - PADDLE_WIDTH/2 - BALL_SIZE/2 &&
 	ball->y - BALL_SIZE/2 + 1  <= paddle1.y + PADDLE_HEIGHT/2 && ball->y + BALL_SIZE/2 - 1 >= paddle1.y - PADDLE_HEIGHT/2 && ball->xSpeed < 0){
 		ball->ySpeed = ball->ySpeed + (ball->y - paddle1.y) * 1/2;
-		if(ball->ySpeed > 0.96){
-			ball->ySpeed = 0.96;
+		if(ball->ySpeed > MAX_BALL_YSPEED_EDGE_BOUNCE){
+			ball->ySpeed = MAX_BALL_YSPEED_EDGE_BOUNCE;
 		}
-		if(ball->ySpeed < -0.96){
-			ball->ySpeed = -0.96;
+		if(ball->ySpeed < - MAX_BALL_YSPEED_EDGE_BOUNCE){
+			ball->ySpeed = - MAX_BALL_YSPEED_EDGE_BOUNCE;
 		}
 		ball->xSpeed = sqroot(1 - ball->ySpeed * ball->ySpeed);
 		randomValue = rand() % 20;
@@ -93,11 +95,11 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 	if((int)ball->x == paddle2.x - PADDLE_WIDTH/2 - BALL_SIZE/2 && 
 	ball->y - BALL_SIZE/2  <= paddle2.y + PADDLE_HEIGHT/2 && ball->y + BALL_SIZE/2 >= paddle2.y - PADDLE_HEIGHT/2 && ball->xSpeed > 0){
 			ball->ySpeed = ball->ySpeed + (ball->y - paddle1.y) * 1/6;
-			if(ball->ySpeed > 0.8){
-				ball->ySpeed = 0.8;
+			if(ball->ySpeed > MAX_BALL_YSPEED){
+				ball->ySpeed = MAX_BALL_YSPEED;
 			}
-			if(ball->ySpeed < -0.8){
-			ball->ySpeed = -0.8;
+			if(ball->ySpeed < - MAX_BALL_YSPEED){
+			ball->ySpeed = - MAX_BALL_YSPEED;
 		}
 			ball->xSpeed = - sqroot(1 - ball->ySpeed * ball->ySpeed);
 	}
@@ -105,11 +107,11 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 	if(ball->x < paddle2.x - PADDLE_WIDTH/2 - BALL_SIZE/2 && ball->x > paddle2.x + PADDLE_WIDTH/2 + BALL_SIZE/2 &&
 	ball->y - BALL_SIZE/2 + 1  <= paddle2.y + PADDLE_HEIGHT/2 && ball->y + BALL_SIZE/2 - 1 >= paddle2.y - PADDLE_HEIGHT/2 && ball->xSpeed > 0){
 		ball->ySpeed = ball->ySpeed + (ball->y - paddle2.y) * 1/2;
-		if(ball->ySpeed > 0.96){
-			ball->ySpeed = 0.96;
+		if(ball->ySpeed > MAX_BALL_YSPEED_EDGE_BOUNCE){
+			ball->ySpeed = MAX_BALL_YSPEED_EDGE_BOUNCE;
 		}
-		if(ball->ySpeed < -0.9){
-			ball->ySpeed = -0.9;
+		if(ball->ySpeed < - MAX_BALL_YSPEED_EDGE_BOUNCE){
+			ball->ySpeed = - MAX_BALL_YSPEED_EDGE_BOUNCE;
 		}
 		ball->xSpeed = sqroot(1 - ball->ySpeed * ball->ySpeed);
 	}
@@ -174,8 +176,8 @@ void gameLoop(){
 	paddle2.x = 125;
 	paddle2.y = 16;
 
-	score_p1 = 3;
-	score_p2 = 3;
+	score_p1 = 2;
+	score_p2 = 2;
 
 	if(gameState == STATE_SINGLEPLAYER){
 		
@@ -243,13 +245,13 @@ void gameLoop(){
 					btnPressed = 0;
 				}
 				display_string(0, "HIGHSCORE:");
-				display_string(1, combineString("Score: ", scoreString));
-				display_string(2, "Enter name:");
+				display_string(1, scoreString);
+				display_string(2, "ENTER NAME:");
 				display_string(3, name);
 				display_update();
 				
 			}
-			
+			while(getbtns());
 
 		}
 	}
@@ -283,6 +285,15 @@ void gameLoop(){
 			updateScreen();
 			delay(120000);
 		}
+		if(score_p1 > score_p2){
+			renderWinner(1);
+		}
+		if(score_p1 < score_p2){
+			renderWinner(2);
+		}
+		updateScreen();
+		while(!getbtns());
+		while(getbtns());
 
 	}	
 	gameState = STATE_MENU;
@@ -290,10 +301,10 @@ void gameLoop(){
 
 void menu(void){
 	PORTECLR = ~0x0;
-	display_string(0, "MENU:");
-	display_string(1, "Singleplayer");
-	display_string(2, "Multiplayer");
-	display_string(3, "Highscore");
+	display_string(0, "--------MENU--------");
+	display_string(1, "BTN4 - SINGLEPLAYER");
+	display_string(2, "BTN3 - MULTIPLAYER");
+	display_string(3, "BTN2 - HIGHSCORE");
 	display_update();
 	while(!gameState){
 		if(getbtns() & BTN2_MASK){
@@ -316,6 +327,9 @@ int main() {
 	srand(0x8924152c);
 	init();
 	display_init();
+	updateScreen();
+	while(!getbtns());
+	while(getbtns());
 	while(1){
 		switch (gameState)
 		{
