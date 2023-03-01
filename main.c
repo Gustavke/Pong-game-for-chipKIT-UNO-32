@@ -53,7 +53,7 @@ double sqroot(double square)
     return root;
 }
 
-void combineString(const char str1[], const char str2[], char targetString[]){
+/* void combineString(const char str1[], const char str2[], char targetString[]){
 	int i = 0;
 	int j = 0;
 
@@ -68,7 +68,7 @@ void combineString(const char str1[], const char str2[], char targetString[]){
 	}
 
 	targetString[i + j] = 0;
-}
+}*/
 
 void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2){
 	if((int)ball->x == paddle1.x + PADDLE_WIDTH/2 + BALL_SIZE/2 && 
@@ -134,7 +134,12 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 		ball->xSpeed = - ball->xSpeed;
 		ball->ySpeed = - ball->ySpeed;
 		score_p2++;
-		PORTESET = 1 << (score_p2 - 1);
+		if(gameState == STATE_MULTIPLAYER){
+			PORTESET = 1 << (score_p2 - 1);
+		}
+		else if(gameState == STATE_SINGLEPLAYER){
+			PORTECLR = 1 << (4 + score_p2);
+		}
 	}
 
 	if(ball->x > 127 - BALL_SIZE/2){
@@ -143,7 +148,9 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 		ball->xSpeed = - ball->xSpeed;
 		ball->ySpeed = - ball->ySpeed;
 		score_p1++;
-		PORTESET = 1 << (7 - (score_p1 - 1));
+		if(gameState == STATE_MULTIPLAYER){
+			PORTESET = 1 << (7 - (score_p1 - 1));
+		}
 	}
 }
 
@@ -208,7 +215,10 @@ void gameLoop(){
 			if(getbtns() & BTN4_MASK){
 				difficulty = 2;
 				}
-	}
+		}
+
+		PORTESET = 0xe0;
+
 		uint8_t count = 0;
 		while(score_p2 < 3){
 			count++;
@@ -288,45 +298,32 @@ void gameLoop(){
 				display_update();
 				
 			}
-			//combineString(name, " - ", combinedString2);
-			//combineString(combinedString, scoreString, highscoreString);
-			//combineString("test", "string", highscoreString);
+
 			highscore[difficulty] = score_p1;
 			int i;
+			char highscoreSubstring[21] = {0};
 			if(difficulty == 0){
-				char highscoreSubstring[21] = "HARD:   ";
-				strcat(highscoreSubstring, name);
-				strcat(highscoreSubstring, " - ");
-				strcat(highscoreSubstring, scoreString);
-				for(i = 0; i < 22; i++){
-					highscoreString[0][i] = highscoreSubstring[i];
-				}
+				highscoreSubstring[21] = "HARD:   ";
 			}
-			if(difficulty == 1){
-				char highscoreSubstring[21] = "NORMAL: ";
-				strcat(highscoreSubstring, name);
-				strcat(highscoreSubstring, " - ");
-				strcat(highscoreSubstring, scoreString);
-				for(i = 0; i < 22; i++){
-					highscoreString[1][i] = highscoreSubstring[i];
-				}
+			else if(difficulty == 1){
+				highscoreSubstring[21] = "NORMAL: ";
 			}
-			if(difficulty == 2){
-				
-				char highscoreSubstring[21] = "EASY:   ";
-				strcat(highscoreSubstring, name);
-				strcat(highscoreSubstring, " - ");
-				strcat(highscoreSubstring, scoreString);
-				for(i = 0; i < 22; i++){
-					highscoreString[2][i] = highscoreSubstring[i];
-				}
+			else if(difficulty == 2){
+				highscoreSubstring[21] = "EASY:   ";
+			}
+
+			strcat(highscoreSubstring, name);
+			strcat(highscoreSubstring, " - ");
+			strcat(highscoreSubstring, scoreString);
+			for(i = 0; i < 22; i++){
+				highscoreString[difficulty][i] = highscoreSubstring[i];
 			}
 
 			while(getbtns());
 		}
 	}
 
-	if(gameState == STATE_MULTIPLAYER){
+	else if(gameState == STATE_MULTIPLAYER){
 		
 		while(score_p1 < 5 && score_p2 < 5){
 			clearScreen();
