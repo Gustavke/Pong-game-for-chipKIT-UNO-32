@@ -1,10 +1,8 @@
 #include <stdio.h>
-#include <errno.h>
 #include <pic32mx.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include "inputs.h"
-#include <string.h>
 
 // Game constants
 #define PADDLE_HEIGHT 9
@@ -52,21 +50,20 @@ double sqroot(double square)
     return root;
 }
 
- void combineString(const char str1[], const char str2[], char targetString[]){
+ void combineString(char str1[], const char str2[]){
 	int i = 0;
 	int j = 0;
 
 	while(str1[i]){
-		targetString[i] = str1[i];
 		i++;
 	}
 
 	while(str2[j]){
-		targetString[i + j] = str2[j];
+		str1[i + j] = str2[j];
 		j++;
 	}
 
-	targetString[i + j] = 0;
+	str1[i + j] = 0;
 }
 
 void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2){
@@ -328,18 +325,16 @@ void gameLoop(){
 			// Initialize variables to allow the player to enter their name and store their high score.
 			char name[22] = {65,65,65,0};
 			uint8_t index = 0;
-			uint8_t btnPressed = 0;
 			char scoreString[7];
 			sprintf(scoreString, "%d", score_p1);
-			char combinedString[22] = {0};
-			char combinedString2[44] = {0};
-			combineString("SCORE: ", scoreString, combinedString);
+			char combinedString[22] = "SCORE: ";
+			combineString(combinedString, scoreString);
 
 			// Loop until 3 characters have been entered
 			while (index < 3)
 			{	
 				// If player presses BTN4, increment current character value
-				if(getbtns() & BTN4_MASK && !btnPressed){
+				if(getbtns() & BTN4_MASK){
 					name[index]++;
 					if(name[index] > 90){
 						name[index] = 65;
@@ -347,7 +342,7 @@ void gameLoop(){
 				}
 
 				// If player presses BTN3, decrement current character value
-				if(getbtns() & BTN3_MASK && !btnPressed){
+				if(getbtns() & BTN3_MASK){
 					name[index]--;
 					if(name[index] < 65){
 						name[index] = 90;
@@ -355,20 +350,13 @@ void gameLoop(){
 				}
 
 				// If player presses BTN2, move to previous character
-				if(getbtns() & BTN2_MASK && !btnPressed && index > 0){
+				if(getbtns() & BTN2_MASK && index > 0){
 					index--;
 				}
 
 				// If player presses BTN1, move to next character
-				if(getbtns() & BTN1_MASK && !btnPressed && index < 3){
+				if(getbtns() & BTN1_MASK && index < 3){
 					index++;
-				}
-				
-				if(getbtns()){
-					btnPressed = 1;
-				}
-				else{
-					btnPressed = 0;
 				}
 
 				// Display highscore and current name value while it is being entered by the player
@@ -377,7 +365,8 @@ void gameLoop(){
 				display_string(2, "ENTER NAME:");
 				display_string(3, name);
 				display_update();
-				
+
+				while(!getbtns());
 			}
 			// Store highscore for current difficulty
 			highscore[difficulty] = score_p1;
@@ -386,18 +375,18 @@ void gameLoop(){
 			int i;
 			char highscoreSubstring[21] = {0};
 			if(difficulty == 0){
-				strcat(highscoreSubstring, "HARD:   ");
+				combineString(highscoreSubstring, "HARD:   ");
 			}
 			else if(difficulty == 1){
-				strcat(highscoreSubstring, "NORMAL: ");
+				combineString(highscoreSubstring, "NORMAL: ");
 			}
 			else if(difficulty == 2){
-				strcat(highscoreSubstring, "EASY:   ");
+				combineString(highscoreSubstring, "EASY:   ");
 			}
 
-			strcat(highscoreSubstring, name);
-			strcat(highscoreSubstring, " - ");
-			strcat(highscoreSubstring, scoreString);
+			combineString(highscoreSubstring, name);
+			combineString(highscoreSubstring, " - ");
+			combineString(highscoreSubstring, scoreString);
 			for(i = 0; i < 22; i++){
 				highscoreString[difficulty][i] = highscoreSubstring[i];
 			}

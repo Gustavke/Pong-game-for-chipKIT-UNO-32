@@ -1,7 +1,7 @@
 #include <pic32mx.h>
 #include <stdint.h>
 
-void *stdin, *stdout, *stderr, *errno;
+void *stdin, *stdout, *stderr;
 
 void init( void )
 {
@@ -40,13 +40,11 @@ void init( void )
 	SPI2CONSET = 0x8000;
 
 
-    volatile int* ledControl = (volatile int*) 0xbf886100; //Initialize pointer to TRISE
-    *ledControl = *ledControl & ~(0xff); //Set bit 0-7 to 0 (output)
-    volatile int* leds = (volatile int*) 0xbf886110; //Initialize pointer to PORTE
-    *leds = 0; //Turn of leds
+	TRISECLR = 0xff; //Set bit 0-7 to 0 (output)
+	PORTE = 0; //Turn of leds
     TRISDSET = 0xfe0; // Set bit 5-11 to input (buttons and switches)
-    T2CON = 0x7 << 4; //Disable timer and set prescaling 1:256
-    PR2 = 80000000 / 256 / 80; //Period value for 0,1s
+    T2CON = 0x5 << 4; //Disable timer and set prescaling 1:32
+    PR2 = 80000000 / 32 / 80; //Period value for 1/80 s
     TMR2 = 0; //Resetting counter
     T2CONSET = 1 << 15; //Start timer
 

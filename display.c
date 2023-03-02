@@ -239,9 +239,7 @@ void updateScreen(void) {
 		
 		for(j = 0; j < 128; j++)
 			spi_send_recv(displayBuffer[i*128 + j]);
-	}
-
-    
+	}    
 }
 
 void renderPoint(int x, int y){
@@ -249,44 +247,6 @@ void renderPoint(int x, int y){
 	displayBuffer[page * 128 + x] |= (uint8_t)(1 << y - 8 * page);
 }
 
-/*void display_string(int line, char *s) {
-	int i;
-	if(line < 0 || line >= 4)
-		return;
-	if(!s)
-		return;
-	
-	for(i = 0; i < 16; i++)
-		if(*s) {
-			textbuffer[line][i] = *s;
-			s++;
-		} else
-			textbuffer[line][i] = ' ';
-}
-
-void display_update() {
-	int i, j, k;
-	int c;
-	for(i = 0; i < 4; i++) {
-		DISPLAY_COMMAND_DATA_PORT &= ~DISPLAY_COMMAND_DATA_MASK;
-		spi_send_recv(0x22);
-		spi_send_recv(i);
-		
-		spi_send_recv(0x0);
-		spi_send_recv(0x10);
-		
-		DISPLAY_COMMAND_DATA_PORT |= DISPLAY_COMMAND_DATA_MASK;
-		
-		for(j = 0; j < 16; j++) {
-			c = textbuffer[i][j];
-			if(c & 0x80)
-				continue;
-			
-			for(k = 0; k < 8; k++)
-				spi_send_recv(font[c*8 + k]);
-		}
-	}
-}*/
 void display_string(int line, char *s) {
     int i;
     if(line < 0 || line >= 4)
