@@ -56,15 +56,18 @@ double sqroot(double square)
 	int i = 0;
 	int j = 0;
 
+	// Increment to end of first string
 	while(str1[i]){
 		i++;
 	}
 
+	// Copy second string to end of first string
 	while(str2[j]){
 		str1[i + j] = str2[j];
 		j++;
 	}
 
+	// Set final element of string to NULL, regardless of array length
 	str1[i + j] = 0;
 }
 
@@ -82,7 +85,7 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 		if(ball->ySpeed > MAX_BALL_YSPEED){
 			ball->ySpeed = MAX_BALL_YSPEED;
 		}
-		if(ball->ySpeed < - MAX_BALL_YSPEED){
+		else if(ball->ySpeed < - MAX_BALL_YSPEED){
 			ball->ySpeed = - MAX_BALL_YSPEED;
 		}
 
@@ -104,7 +107,7 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 		if(ball->ySpeed > MAX_BALL_YSPEED_EDGE_BOUNCE){
 			ball->ySpeed = MAX_BALL_YSPEED_EDGE_BOUNCE;
 		}
-		if(ball->ySpeed < - MAX_BALL_YSPEED_EDGE_BOUNCE){
+		else if(ball->ySpeed < - MAX_BALL_YSPEED_EDGE_BOUNCE){
 			ball->ySpeed = - MAX_BALL_YSPEED_EDGE_BOUNCE;
 		}
 
@@ -126,7 +129,7 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 			if(ball->ySpeed > MAX_BALL_YSPEED){
 				ball->ySpeed = MAX_BALL_YSPEED;
 			}
-			if(ball->ySpeed < - MAX_BALL_YSPEED){
+			else if(ball->ySpeed < - MAX_BALL_YSPEED){
 			ball->ySpeed = - MAX_BALL_YSPEED;
 			}
 			
@@ -145,7 +148,7 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 		if(ball->ySpeed > MAX_BALL_YSPEED_EDGE_BOUNCE){
 			ball->ySpeed = MAX_BALL_YSPEED_EDGE_BOUNCE;
 		}
-		if(ball->ySpeed < - MAX_BALL_YSPEED_EDGE_BOUNCE){
+		else if(ball->ySpeed < - MAX_BALL_YSPEED_EDGE_BOUNCE){
 			ball->ySpeed = - MAX_BALL_YSPEED_EDGE_BOUNCE;
 		}
 
@@ -157,7 +160,7 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 	if(ball->y >= 31 - BALL_SIZE/2){
 		ball->ySpeed = - sqroot(ball->ySpeed * ball->ySpeed);
 	}
-	if(ball->y <= 0 + BALL_SIZE/2){
+	else if(ball->y <= 0 + BALL_SIZE/2){
 		ball->ySpeed = sqroot(ball->ySpeed * ball->ySpeed);
 	}
 
