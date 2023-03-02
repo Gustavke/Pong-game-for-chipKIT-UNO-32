@@ -1,3 +1,5 @@
+# Entire Makefile copied from project template
+
 # PIC32 device number
 DEVICE		= 32MX320F128H
 

@@ -1,3 +1,5 @@
+// Copied from project template
+
 /* Non-Maskable Interrupt; something bad likely happened, so hang */
 void _nmi_handler() {
 	for(;;);

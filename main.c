@@ -40,6 +40,7 @@ char highscoreString[3][22];
 uint8_t difficulty = 0;
 int randomValue = 0;
 
+// Copied from stackoverflow
 double sqroot(double square)
 {
     double root=square/3;
@@ -50,6 +51,7 @@ double sqroot(double square)
     return root;
 }
 
+// Written by us
  void combineString(char str1[], const char str2[]){
 	int i = 0;
 	int j = 0;
@@ -66,6 +68,7 @@ double sqroot(double square)
 	str1[i + j] = 0;
 }
 
+// Written by us
 void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2){
 
 	// Paddle 1 collision
@@ -199,6 +202,7 @@ void collision(struct point* ball, struct paddle paddle1, struct paddle paddle2)
 	}
 }
 
+// Written by us
 void renderPaddle(struct paddle paddle){
 	int i, j;
 	for(i = paddle.y - PADDLE_HEIGHT/2; i <= paddle.y + PADDLE_HEIGHT/2; i++){
@@ -209,6 +213,7 @@ void renderPaddle(struct paddle paddle){
 		}
 }
 
+// Written by us
 void renderBall(struct point ball){
 	int i, j;
 	for(i = ball.x - BALL_SIZE/2; i <= ball.x + BALL_SIZE/2; i++){			
@@ -218,6 +223,7 @@ void renderBall(struct point ball){
 		}
 }
 
+// Written by us
 void gameLoop(){
 	//Initialize ball and paddles
 	struct point ball;
@@ -339,6 +345,7 @@ void gameLoop(){
 					if(name[index] > 90){
 						name[index] = 65;
 					}
+					while(getbtns());
 				}
 
 				// If player presses BTN3, decrement current character value
@@ -347,16 +354,19 @@ void gameLoop(){
 					if(name[index] < 65){
 						name[index] = 90;
 					}
+					while(getbtns());
 				}
 
 				// If player presses BTN2, move to previous character
 				if(getbtns() & BTN2_MASK && index > 0){
 					index--;
+					while(getbtns());
 				}
 
 				// If player presses BTN1, move to next character
 				if(getbtns() & BTN1_MASK && index < 3){
 					index++;
+					while(getbtns());
 				}
 
 				// Display highscore and current name value while it is being entered by the player
@@ -366,7 +376,6 @@ void gameLoop(){
 				display_string(3, name);
 				display_update();
 
-				while(!getbtns());
 			}
 			// Store highscore for current difficulty
 			highscore[difficulty] = score_p1;
@@ -461,6 +470,7 @@ void gameLoop(){
 	gameState = STATE_MENU;
 }
 
+// Written by us
 void viewHighscore(){
 	// Wait until all butons are released before continuing
 	while(getbtns());
@@ -480,6 +490,7 @@ void viewHighscore(){
 	gameState = STATE_MENU;
 }
 
+// Written by us
 void menu(void){
 	// Turn off all LEDS
 	PORTECLR = ~0x0;
@@ -506,6 +517,7 @@ void menu(void){
 	}
 }
 
+// Written by us
 int main() {
 
 	// Initialize IO
@@ -543,7 +555,7 @@ int main() {
 	return 0;
 } 
 
-
+// Written by us
 void user_isr( void ) {
 	
 	if(IFS(0) & 0x100){

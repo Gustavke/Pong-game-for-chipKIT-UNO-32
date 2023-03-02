@@ -3,8 +3,11 @@
 
 void *stdin, *stdout, *stderr;
 
+// Copied from hello-display and our previous work during labs
 void init( void )
-{
+{	
+	// Copied from hello-display
+
     /* Set up peripheral bus clock */
 	OSCCON &= ~0x180000;
 	OSCCON |= 0x080000;
@@ -39,6 +42,7 @@ void init( void )
 	/* Turn on SPI */
 	SPI2CONSET = 0x8000;
 
+	// Copied from our work during previous labs
 
 	TRISECLR = 0xff; //Set bit 0-7 to 0 (output)
 	PORTE = 0; //Turn of leds
@@ -51,8 +55,6 @@ void init( void )
     IEC(0) = 0x100; //Enable interrupt for timer2 
     IPC(2) = 4;  //Set timer 2 priority and subpriority 
     IPC(1) = 1 << 26;
-    
-
     
     return;
 }

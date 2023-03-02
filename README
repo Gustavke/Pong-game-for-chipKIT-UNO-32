@@ -1,12 +1,22 @@
-This is an empty project template.
-Just add your own code to the existing C or assembly files.
-Any added C or assembly files will automatically be built,
-no need to edit the Makefile.
+This is a pong game developed for chipKIT UNO 32 with a basic IO shield.
+To compile and run the game, open MCB32Tools, navigate to the correct directory, 
+type make and then make install with the chipkit connected. The game will boot
+instantly and a splash screen will appear that can be dismissed with any button
+to enter the game menu.
 
-The template contains the following source files:
+The game contains the following source files:
 
 main.c:
-	Contains the entry point main()
+	Contains the logic for the game and game menus
+
+display.c:
+	Contains logic for writing to and updating the display
+
+IOinit.c:
+	Contains logic for initializing IO for screen, buttons, timers and leds
+
+inputs.c
+	Contains logic for detecting button presses
 
 vectors.S:
 	Contains the interrupt handler and the exception handler

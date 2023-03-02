@@ -1,4 +1,7 @@
   # vectors.S
+  
+  # Copied from project template, added enable interrupts
+  
   # This file written 2015 by Axel Isaksson
   # Modified 2015 by F Lundevall
   # For copyright and licensing, see file COPYING

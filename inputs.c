@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <pic32mx.h>
 
+// Entire inputs.c is copied from previous labs
+
 #define BTN1_MASK 0x1
 #define BTN2_MASK 0x2
 #define BTN3_MASK 0x4
